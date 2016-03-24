@@ -9,9 +9,7 @@ __docformat__ = 'restructuredtext'
 
 
 class SlackModel(NLPModel):
-    """
-    General framework for converting a nonlinear optimization problem to a
-    form using slack variables.
+    """Framework for converting a nonlinear problem to a slack form.
 
     Original problem:
          cL <= c(x)
@@ -55,13 +53,15 @@ class SlackModel(NLPModel):
     such as the index set of constraints with an upper bound, etc., but
     rather performs the evaluations of the constraints for the updated
     model implicitly.
-
-    :parameters:
-        :model:  Original model to be transformed into a slack form.
-
     """
 
     def __init__(self, model, **kwargs):
+        """Instantiate a model in its slack form.
+
+        :parameters:
+            :model:  Original model to be transformed into a slack form.
+
+        """
         self.model = model
 
         # Save number of variables and constraints prior to transformation
@@ -86,23 +86,23 @@ class SlackModel(NLPModel):
         # Add bounds corresponding to lower constraints
         bot = self.original_n
         self.sL = range(bot, bot + model.nlowerC)
-        Lvar[bot:bot+model.nlowerC] = model.Lcon[model.lowerC]
+        Lvar[bot:bot + model.nlowerC] = model.Lcon[model.lowerC]
 
         # Add bounds corresponding to upper constraints
         bot += model.nlowerC
         self.sU = range(bot, bot + model.nupperC)
-        Uvar[bot:bot+model.nupperC] = model.Ucon[model.upperC]
+        Uvar[bot:bot + model.nupperC] = model.Ucon[model.upperC]
 
         # Add bounds corresponding to range constraints
         bot += model.nupperC
         self.sR = range(bot, bot + model.nrangeC)
-        Lvar[bot:bot+model.nrangeC] = model.Lcon[model.rangeC]
-        Uvar[bot:bot+model.nrangeC] = model.Ucon[model.rangeC]
+        Lvar[bot:bot + model.nrangeC] = model.Lcon[model.rangeC]
+        Uvar[bot:bot + model.nrangeC] = model.Ucon[model.rangeC]
 
         # No more inequalities. All constraints are now equal to 0
         Lcon = Ucon = np.zeros(m)
 
-        super(SlackModel, self).__init__(n=n, m=m, name='Slack-'+model.name,
+        super(SlackModel, self).__init__(n=n, m=m, name='Slack-' + model.name,
                                          Lvar=Lvar, Uvar=Uvar,
                                          Lcon=Lcon, Ucon=Ucon)
 
