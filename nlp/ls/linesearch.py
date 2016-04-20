@@ -26,15 +26,22 @@ class LineSearch(object):
             :step: initial step size (default: 1.0)
             :value: initial function value (computed if not supplied)
             :slope: initial slope (computed if not supplied)
+            :trial_value: function value at `x + t*d`
+                          (computed if not supplied)
             :name: linesearch procedure name.
         """
         self.__linemodel = linemodel
         self.__name = name
-        self._value = kwargs.get("value", linemodel.obj(0))
-        self._slope = kwargs.get("slope", linemodel.grad(0))
+
+        self._value = kwargs.get("value", None)
+        if self._value is None:
+            self._value = linemodel.obj(0)
+
+        self._slope = kwargs.get("slope", None)
+        if self._slope is None:
+            self._slope = linemodel.grad(0)
         self.check_slope(self.slope)
 
-        self._trial_value = self._value
         self._step0 = max(kwargs.get("step", 1.0), 0)
         self._step = self._step0
 
@@ -43,7 +50,9 @@ class LineSearch(object):
             raise LineSearchFailure("initial linesearch step too small")
 
         self._trial_iterate = self.linemodel.x + self.step * self.linemodel.d
-        self._trial_value = self.linemodel.obj(self.step, x=self.iterate)
+        self._trial_value = kwargs.get("trial_value", None)
+        if self._trial_value is None:
+            self._trial_value = self.linemodel.obj(self.step, x=self.iterate)
         return
 
     @property
@@ -192,7 +201,8 @@ class ArmijoWolfeLineSearch(ArmijoLineSearch):
                    during the backtracking (default: 1.5).
         """
         name = kwargs.pop("name", "Armijo-Wolfe linesearch")
-        super(ArmijoWolfeLineSearch, self).__init__(*args, name=name, **kwargs)
+        super(ArmijoWolfeLineSearch, self).__init__(
+            *args, name=name, **kwargs)
         self.__gtol = min(max(kwargs.get("gtol", 0.9999),
                               self.ftol + sqeps),
                           1 - sqeps)
