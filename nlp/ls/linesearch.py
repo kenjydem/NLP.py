@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """A general linesearch framework."""
 
 from math import sqrt
@@ -119,7 +120,7 @@ class ArmijoLineSearch(LineSearch):
     """Armijo backtracking linesearch."""
 
     def __init__(self, *args, **kwargs):
-        """Instantiate an Armijo backtracking linesearch.
+        u"""Instantiate an Armijo backtracking linesearch.
 
         The search stops as soon as a step size t is found such that
 
@@ -181,7 +182,7 @@ class ArmijoWolfeLineSearch(ArmijoLineSearch):
     """Improved Armijo backtracking linesearch."""
 
     def __init__(self, *args, **kwargs):
-        """Instantiate an improved Armijo backtracking linesearch.
+        u"""Instantiate an improved Armijo backtracking linesearch.
 
         The search stops as soon as a step size t is found such that
 
@@ -201,8 +202,8 @@ class ArmijoWolfeLineSearch(ArmijoLineSearch):
                    during the backtracking (default: 1.5).
         """
         name = kwargs.pop("name", "Armijo-Wolfe linesearch")
-        super(ArmijoWolfeLineSearch, self).__init__(
-            *args, name=name, **kwargs)
+        super(ArmijoWolfeLineSearch, self).__init__(*args, name=name, **kwargs)
+
         self.__gtol = min(max(kwargs.get("gtol", 0.9999),
                               self.ftol + sqeps),
                           1 - sqeps)
