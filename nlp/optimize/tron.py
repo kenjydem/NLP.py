@@ -556,7 +556,7 @@ class TRON(object):
 
 
 class QNTRON(TRON):
-    """A variant of TRON with quasi-Newton Hessian."""
+    """A variant of TRON with quasi-Newton Hessian.."""
 
     def __init__(self, *args, **kwargs):
         super(QNTRON, self).__init__(*args, **kwargs)
