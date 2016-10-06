@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """An augmented Lagrangian model."""
 
-from nlp.model.nlpmodel import NLPModel, BoundConstrainedNLPModel
+from nlp.model.nlpmodel import BoundConstrainedNLPModel
 from nlp.model.qnmodel import QuasiNewtonModel
 from nlp.model.snlp import SlackModel
 
@@ -35,9 +35,6 @@ class AugmentedLagrangian(BoundConstrainedNLPModel):
             :pi:       vector of initial multipliers (default: model.pi0)
             :xk:       initial value of the proximal vector (default: all zero)
         """
-        if not isinstance(model, NLPModel):
-            raise TypeError("model should be a subclass of NLPModel")
-
         if not isinstance(model, SlackModel):
             self.model = SlackModel(model, **kwargs)
 
@@ -54,7 +51,7 @@ class AugmentedLagrangian(BoundConstrainedNLPModel):
 
         self.pi0 = np.zeros(self.model.m)
         self.pi = self.pi0.copy()
-        self.x0 = self.model.x0
+        self.x0 = self.model.x0.copy()
 
         self.xk = kwargs.get("xk",
                              np.zeros(self.n) if self.prox_init > 0 else None)
@@ -95,7 +92,7 @@ class AugmentedLagrangian(BoundConstrainedNLPModel):
         model = self.model
         J = model.jop(x)
         cons = model.cons(x)
-        algrad = model.grad(x) + J.T * (self.penalty * cons - self.pi)
+        algrad = model.grad(x) - J.T * (self.pi - self.penalty * cons)
         if self.prox > 0:
             algrad += self.prox * (x - self.xk)
         return algrad
@@ -114,7 +111,7 @@ class AugmentedLagrangian(BoundConstrainedNLPModel):
         Lagrangian with a vector v.
         """
         model = self.model
-        cons = model.cons(x)
+        cons = self.model.cons(x)
 
         w = model.hprod(x, self.pi - self.penalty * cons, v)
         J = model.jop(x)

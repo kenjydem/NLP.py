@@ -262,6 +262,7 @@ class SlackModel(NLPModel):
         Hv = np.zeros(self.n)
         Hv[:on] = model.hprod(x[:on], y, v[:on], **kwargs)
         return Hv
+<<<<<<< HEAD
 
     def hess(self, x, z=None, *args, **kwargs):
         """Evaluate Lagrangian Hessian at (x, z)."""
@@ -281,3 +282,5 @@ class SlackModel(NLPModel):
         gHiv = np.zeros(self.m)
         gHiv[:om] = model.ghivprod(x[:on], g[:on], v[:on], **kwargs)
         return gHiv
+=======
+>>>>>>> 2043a0cb21d7b191fcd8c6f830606312c1cade9a
